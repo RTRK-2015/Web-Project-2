@@ -89,4 +89,7 @@
     <servlet-name>WritingMailServlet</servlet-name>
     <url-pattern>/WritingMail</url-pattern>
   </servlet-mapping>
+  <welcome-file-list>
+  	<welcome-file>Index</welcome-file>
+  </welcome-file-list>
 </web-app>
