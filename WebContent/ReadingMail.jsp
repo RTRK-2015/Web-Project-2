@@ -1,18 +1,24 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page
+	language="java"
+	contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"
+%>
+<!DOCTYPE html>
 <html>
 <head>
-<title>Web mail</title>
+	<meta charset="UTF-8">
+	<title>Web mail</title>
+	<link rel="stylesheet" type="text/css" href="css/main.css">
 	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script type="text/javascript" src="loadMessage.js"></script>
+	<script type="text/javascript" src="js/loadMail.js"></script>
 </head>
 <body>
 	<h1>Prijavljen korisnik: <%=session.getAttribute("userName")%></h1>
 	<h2>Citanje poruke</h2>
-	<table border="1" width="60%">
+	<table class="show bordered">
 		<tr>
 			<td width="20%">Poruka br.</td>
-			<td id="idnum" width="80%"></td>
+			<td width="80%" id="mailid"></td>
 		</tr>
 		<tr>
 			<td>Od:</td>

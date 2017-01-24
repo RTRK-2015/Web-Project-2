@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,7 +17,7 @@ import com.google.gson.Gson;
 
 
 /**
- * Servlet implementation class RegisterServlet
+ * Servlet implementation for /Register
  */
 public class RegisterServlet extends HttpServlet
 {
@@ -26,27 +25,28 @@ public class RegisterServlet extends HttpServlet
 
 
 	/**
+	 * Constructs a servlet instance.
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public RegisterServlet()
 	{
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 
 	/**
+	 * Forwards the request to the html page.
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		RequestDispatcher dispatcher = request.getRequestDispatcher("Register.html");
-		dispatcher.forward(request, response);
+		request.getRequestDispatcher("Register.html").forward(request, response);
 	}
 
 
 	/**
+	 * Responds to a POST request by sending a request to the server to register the user.
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
@@ -63,19 +63,19 @@ public class RegisterServlet extends HttpServlet
 			PrintWriter writer = (PrintWriter) sc.getAttribute("writer");
 			BufferedReader reader = (BufferedReader) sc.getAttribute("reader");
 	
-			String userName = request.getParameter("username");
+			final String userName = request.getParameter("username");
 			Map<String, Object> requestMap = new HashMap<>();
 			requestMap.put("command", "REGISTER");
 			requestMap.put("userName", userName);
-			String requestJSON = new Gson().toJson(requestMap, Map.class);
+			final String requestJSON = new Gson().toJson(requestMap, Map.class);
 			writer.println(requestJSON);
 			writer.flush();
 	
 			while (!reader.ready())
 				;
-			String responseJSON = reader.readLine();
+			final String responseJSON = reader.readLine();
 			@SuppressWarnings("unchecked")
-			Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
+			final Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
 	
 			if ((boolean) responseMap.get("success"))
 			{
@@ -88,5 +88,4 @@ public class RegisterServlet extends HttpServlet
 			}
 		}
 	}
-
 }

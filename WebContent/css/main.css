@@ -1,0 +1,20 @@
+@CHARSET "UTF-8";
+table.show {
+	width: 60%;
+}
+
+table.show tr {
+	background-color: lightgrey;
+}
+
+table.bordered {
+	border: 1px solid lightgrey;	
+}
+
+table.unbordered {
+	border: 0;
+}
+
+#main-table {
+	margin-bottom: 10px;	
+}

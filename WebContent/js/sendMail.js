@@ -4,7 +4,11 @@ $(document).ready(function() {
 			type: 'POST',
 			url: 'WritingMail',
 			dataType: 'json',
-			data: { mailto: $('#mailto').val(), mailsubject: $('#mailsubject').val(), mailbody: $('#mailbody').val() }
+			data: {
+				mailto: $('#mailto').val(),
+				mailsubject: $('#mailsubject').val(),
+				mailbody: $('#mailbody').val()
+			}
 		}).done(function(msg) {
 			if (msg.success === true) {
 				alert("Mejl uspesno poslat!");

@@ -3,7 +3,6 @@ package aleksandar.vuk.pavlovic.servlets;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * Servlet implementation class RegisterFailedServlet
+ * Servlet implementation for /RegisterFailed
  */
 public class RegisterFailedServlet extends HttpServlet
 {
@@ -19,6 +18,7 @@ public class RegisterFailedServlet extends HttpServlet
 
 
 	/**
+	 * Constructs a servlet instance.
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public RegisterFailedServlet()
@@ -28,13 +28,13 @@ public class RegisterFailedServlet extends HttpServlet
 
 
 	/**
+	 * Forwards the request to the html page.
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		RequestDispatcher dispatcher = request.getRequestDispatcher("RegisterFailed.html");
-		dispatcher.forward(request, response);
+		request.getRequestDispatcher("RegisterFailed.html").forward(request, response);
 	}
 
 }

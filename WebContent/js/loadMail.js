@@ -5,10 +5,10 @@ $(document).ready(function() {
 		type: 'POST',
 		url: 'ReadingMail',
 		dataType: 'json',
-		data: { idnum: id }
+		data: { mailid: id }
 	}).done(function(msg) {
-		if (msg.success === true) {
-			$('#idnum').html(id);
+		if (msg.success) {
+			$('#mailid').html(id);
 			$('#mailfrom').html(msg.from);
 			$('#mailsubject').html(msg.subject);
 			$('#mailbody').html(msg.body);

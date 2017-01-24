@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,13 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
-import com.sun.java.swing.plaf.windows.WindowsInternalFrameTitlePane.ScalableIconUIResource;
 
 import aleksandar.vuk.pavlovic.model.MailSnippet;
 
 
 /**
- * Servlet implementation class MainServlet
+ * Servlet implementation for /Main
  */
 public class MainServlet extends HttpServlet
 {
@@ -32,6 +30,7 @@ public class MainServlet extends HttpServlet
 
 
 	/**
+	 * Constructs a servlet instance.
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public MainServlet()
@@ -40,6 +39,11 @@ public class MainServlet extends HttpServlet
 	}
 
 
+	/**
+	 * Loads the mail snippets from the server and puts them into the current session.
+	 * @param request Request received from the browser.
+	 * @throws IOException if reading mails from the throws.
+	 */
 	private void loadMails(HttpServletRequest request) throws IOException
 	{
 		ServletContext sc = getServletContext();
@@ -48,17 +52,18 @@ public class MainServlet extends HttpServlet
 		BufferedReader reader = (BufferedReader) sc.getAttribute("reader");
 		Map<String, Object> requestMap = new HashMap<>();
 		requestMap.put("command", "LIST");
-		String requestJSON = new Gson().toJson(requestMap, Map.class);
+		final String requestJSON = new Gson().toJson(requestMap, Map.class);
 		
 		writer.println(requestJSON);
 		writer.flush();
 		
-		while (!reader.ready());
-		String responseJSON = reader.readLine();
+		while (!reader.ready())
+			;
+		final String responseJSON = reader.readLine();
 		@SuppressWarnings("unchecked")
-		Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
+		final Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
 		@SuppressWarnings("unchecked")
-		Collection<String> collectionJSON = (Collection<String>)responseMap.get("mails");
+		final Collection<String> collectionJSON = (Collection<String>)responseMap.get("mails");
 		ArrayList<MailSnippet> snippets = new ArrayList<>();
 		
 		for (String snippetJSON : collectionJSON)
@@ -70,25 +75,19 @@ public class MainServlet extends HttpServlet
 	
 	
 	/**
+	 * Responds to the GET request by loading mails, which the page will later display.
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		if (request.getSession().getAttribute("userName") != null)
-		{
-			loadMails(request);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("Main.jsp");
-			dispatcher.forward(request, response);
-		}
-		else
-		{
-			response.sendRedirect("Index");
-		}
+		loadMails(request);
+		request.getRequestDispatcher("Main.jsp").forward(request, response);
 	}
 
 
 	/**
+	 * Responds to POST request by sending a login request to the server.
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
@@ -99,17 +98,17 @@ public class MainServlet extends HttpServlet
 		PrintWriter writer = (PrintWriter) sc.getAttribute("writer");
 		BufferedReader reader = (BufferedReader) sc.getAttribute("reader");
 
-		String userName = request.getParameter("username");
+		final String userName = request.getParameter("username");
 		Map<String, Object> requestMap = new HashMap<>();
 		requestMap.put("command", "LOGIN");
 		requestMap.put("userName", userName);
-		String requestJSON = new Gson().toJson(requestMap, Map.class);
+		final String requestJSON = new Gson().toJson(requestMap, Map.class);
 		writer.println(requestJSON);
 		writer.flush();
 
 		while (!reader.ready())
 			;
-		String responseJSON = reader.readLine();
+		final String responseJSON = reader.readLine();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
 

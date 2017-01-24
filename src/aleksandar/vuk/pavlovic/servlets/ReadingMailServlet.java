@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +19,7 @@ import aleksandar.vuk.pavlovic.model.MailFromServer;
 
 
 /**
- * Servlet implementation class ReadingMailServlet
+ * Servlet implementation for /ReadingMail
  */
 public class ReadingMailServlet extends HttpServlet
 {
@@ -28,6 +27,7 @@ public class ReadingMailServlet extends HttpServlet
 
 
 	/**
+	 * Constructs a servlet instance.
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public ReadingMailServlet()
@@ -37,44 +37,47 @@ public class ReadingMailServlet extends HttpServlet
 
 
 	/**
+	 * Responds to a GET request by forwarding to the page.
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{	
-		RequestDispatcher dispatcher = request.getRequestDispatcher("ReadingMail.jsp");
-		dispatcher.forward(request, response);
+		request.getRequestDispatcher("ReadingMail.jsp").forward(request, response);
 	}
 	
 	
+	/**
+	 * Responds to a POST request (sent by AJAX on the page) by loading the specified mail from the server.
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException)
+	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		int id = Integer.parseInt(request.getParameter("idnum"));
+		final int id = Integer.parseInt(request.getParameter("mailid"));
 		
 		ServletContext sc = getServletContext();
 		
 		PrintWriter writer = (PrintWriter) sc.getAttribute("writer");
 		BufferedReader reader = (BufferedReader) sc.getAttribute("reader");
 
-		String userName = request.getParameter("username");
 		Map<String, Object> requestMap = new HashMap<>();
 		requestMap.put("command", "RECEIVE");
 		requestMap.put("id", id);
-		String requestJSON = new Gson().toJson(requestMap, Map.class);
+		final String requestJSON = new Gson().toJson(requestMap, Map.class);
 		writer.println(requestJSON);
 		writer.flush();
 
 		while (!reader.ready())
 			;
-		String responseJSON = reader.readLine();
+		final String responseJSON = reader.readLine();
 		@SuppressWarnings("unchecked")
-		Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
+		final Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
 
 		Map<String, Object> ajaxResponseMap = new HashMap<>();
 		
 		if ((boolean) responseMap.get("success"))
 		{
-			MailFromServer mail = new Gson().fromJson((String)responseMap.get("mail"), MailFromServer.class);
+			final MailFromServer mail = new Gson().fromJson((String)responseMap.get("mail"), MailFromServer.class);
 			
 			ajaxResponseMap.put("success", true);
 			ajaxResponseMap.put("from", mail.from);
@@ -87,7 +90,7 @@ public class ReadingMailServlet extends HttpServlet
 			ajaxResponseMap.put("error", "Could not find that mail!");
 		}
 		
-		String ajaxResponseJSON = new Gson().toJson(ajaxResponseMap, Map.class);
+		final String ajaxResponseJSON = new Gson().toJson(ajaxResponseMap, Map.class);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(ajaxResponseJSON);

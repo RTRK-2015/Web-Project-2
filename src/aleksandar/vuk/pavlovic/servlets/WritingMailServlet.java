@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +19,7 @@ import aleksandar.vuk.pavlovic.model.MailToServer;
 
 
 /**
- * Servlet implementation class WritingMailServlet
+ * Servlet implementation class /WritingMail
  */
 public class WritingMailServlet extends HttpServlet
 {
@@ -28,6 +27,7 @@ public class WritingMailServlet extends HttpServlet
 
 
 	/**
+	 * Constructs a servlet instance.
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public WritingMailServlet()
@@ -37,52 +37,49 @@ public class WritingMailServlet extends HttpServlet
 
 
 	/**
+	 * Forwards the request to the jsp page.
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		RequestDispatcher dispatcher = request.getRequestDispatcher("WritingMail.jsp");
-		dispatcher.forward(request, response);
+		request.getRequestDispatcher("WritingMail.jsp").forward(request, response);
 	}
 
 
 	/**
+	 * Responds to a POST request (AJAX from the page) by sending a request to the server to "send" mail.
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-	{
-		Map<String, String[]> map = request.getParameterMap();
-		
-		String to = request.getParameter("mailto");
-		String subject = request.getParameter("mailsubject");
-		String body = request.getParameter("mailbody");
-		String from = (String)request.getSession().getAttribute("userName");
-		MailToServer mail = new MailToServer(from, to, subject, body);
-		String mailJSON = new Gson().toJson(mail, MailToServer.class);
+	{	
+		final String to = request.getParameter("mailto");
+		final String subject = request.getParameter("mailsubject");
+		final String body = request.getParameter("mailbody");
+		final String from = (String)request.getSession().getAttribute("userName");
+		final MailToServer mail = new MailToServer(from, to, subject, body);
+		final String mailJSON = new Gson().toJson(mail, MailToServer.class);
 		
 		ServletContext sc = getServletContext();
 		
 		PrintWriter writer = (PrintWriter) sc.getAttribute("writer");
 		BufferedReader reader = (BufferedReader) sc.getAttribute("reader");
 
-		String userName = request.getParameter("username");
 		Map<String, Object> requestMap = new HashMap<>();
 		requestMap.put("command", "SEND");
 		requestMap.put("mail", mailJSON);
 		
-		String requestJSON = new Gson().toJson(requestMap, Map.class);
+		final String requestJSON = new Gson().toJson(requestMap, Map.class);
 		writer.println(requestJSON);
 		writer.flush();
 
 		while (!reader.ready())
 			;
-		String responseJSON = reader.readLine();
+		final String responseJSON = reader.readLine();
 		
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(responseJSON);
 	}
-
 }

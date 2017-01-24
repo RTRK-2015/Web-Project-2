@@ -4,6 +4,7 @@ package aleksandar.vuk.pavlovic.servlets;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import com.google.gson.Gson;
 
 
 /**
- * Servlet implementation class LogoffServlet
+ * Servlet implementation for /Logoff
  */
 public class LogoffServlet extends HttpServlet
 {
@@ -25,6 +26,7 @@ public class LogoffServlet extends HttpServlet
 
 
 	/**
+	 * Constructs the servlet instance.
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public LogoffServlet()
@@ -34,6 +36,7 @@ public class LogoffServlet extends HttpServlet
 
 
 	/**
+	 * Sends the logoff request to mail server before returning the user to Index.
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
@@ -43,16 +46,25 @@ public class LogoffServlet extends HttpServlet
 		
 		PrintWriter writer = (PrintWriter) sc.getAttribute("writer");
 
-		String userName = request.getParameter("username");
+		final String userName = request.getParameter("username");
 		Map<String, Object> requestMap = new HashMap<>();
 		requestMap.put("command", "LOGOFF");
 		requestMap.put("userName", userName);
-		String requestJSON = new Gson().toJson(requestMap, Map.class);
+		final String requestJSON = new Gson().toJson(requestMap, Map.class);
 		writer.println(requestJSON);
 		writer.flush();
 
+		Socket sock = (Socket)sc.getAttribute("sock");
+		BufferedReader reader = (BufferedReader)sc.getAttribute("reader");
+		
+		writer.close();
+		reader.close();
+		sock.close();
+		sc.setAttribute("sock", null);
+		sc.setAttribute("writer", null);
+		sc.setAttribute("reader", null);
+		
 		request.getSession().invalidate();
 		response.sendRedirect("Index");
 	}
-
 }
