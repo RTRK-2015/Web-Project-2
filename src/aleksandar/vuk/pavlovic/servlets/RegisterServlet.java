@@ -78,14 +78,9 @@ public class RegisterServlet extends HttpServlet
 			final Map<String, Object> responseMap = new Gson().fromJson(responseJSON, Map.class);
 	
 			if ((boolean) responseMap.get("success"))
-			{
-				request.getSession().setAttribute("userName", userName);
 				response.sendRedirect("Index");
-			}
 			else
-			{
 				response.sendRedirect("RegisterFailed");
-			}
 		}
 	}
 }
